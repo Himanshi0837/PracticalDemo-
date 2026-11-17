@@ -1,0 +1,26 @@
+package com.example.exam.core.navigation
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bluetooth
+import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.ui.graphics.vector.ImageVector
+
+sealed class BottomNavItem(
+    val route: String,
+    val title: String,
+    val icon: ImageVector
+) {
+    data object Ble : BottomNavItem(
+        route = AppRoutes.Ble.route,
+        title = "BLE",
+        icon = Icons.Default.Bluetooth
+    )
+    data object Api : BottomNavItem(
+        route = AppRoutes.Api.route,
+        title = "API",
+        icon = Icons.Default.Cloud
+    )
+    companion object {
+        val items = listOf(Api, Ble)
+    }
+}
