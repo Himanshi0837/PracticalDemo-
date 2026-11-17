@@ -30,6 +30,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.exam.core.bluetooth.signal.DistanceEstimator
+import com.example.exam.ui.theme.PrimaryBlue
+import com.example.exam.ui.theme.RoseGold
+import com.example.exam.ui.theme.SecondaryRose
+import com.example.exam.ui.theme.TextPrimary
+import com.example.exam.ui.theme.Wine
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -82,12 +87,12 @@ fun DeviceGaugeMeter(
                 val arcTopLeft = Offset(centerOffset.x - radius, centerOffset.y - radius)
                 val arcSize = Size(radius * 2f, radius * 2f)
 
-                // 1. Draw gradient semi-circular track (Near: Deep Blue -> Far: Pale Blue)
+                // 1. Draw gradient semi-circular track (Near: Deep Burgundy -> Closer: Rose -> Far: Rose Gold)
                 val arcBrush = Brush.horizontalGradient(
                     colors = listOf(
-                        Color(0xFF2563EB), // Deep Blue (Near)
-                        Color(0xFF38BDF8), // Light Blue (Closer)
-                        Color(0xFFBAE6FD)  // Pale Blue (Far)
+                        PrimaryBlue,    // Deep Burgundy (Near)
+                        SecondaryRose,  // Rose (Closer)
+                        RoseGold        // Rose Gold (Far)
                     ),
                     startX = arcTopLeft.x,
                     endX = arcTopLeft.x + arcSize.width
@@ -128,7 +133,7 @@ fun DeviceGaugeMeter(
                 // 3. Draw text labels: Near, Closer, Far with dynamic highlight
                 val createPaint = { isActive: Boolean ->
                     Paint().apply {
-                        color = if (isActive) android.graphics.Color.parseColor("#2563EB") else android.graphics.Color.DKGRAY
+                        color = if (isActive) android.graphics.Color.parseColor("#39232F") else android.graphics.Color.parseColor("#786A70")
                         textSize = (if (isActive) 13.sp else 11.5.sp).toPx()
                         textAlign = Paint.Align.CENTER
                         isAntiAlias = true
@@ -194,12 +199,17 @@ fun DeviceGaugeMeter(
                     close()
                 }
 
-                drawPath(needlePath, color = Color(0xFF111827))
+                drawPath(needlePath, color = Wine)
 
-                // Center black hub knob
+                // Center hub knob
                 drawCircle(
-                    color = Color(0xFF111827),
+                    color = Wine,
                     radius = 18.dp.toPx(),
+                    center = centerOffset
+                )
+                drawCircle(
+                    color = RoseGold,
+                    radius = 6.dp.toPx(),
                     center = centerOffset
                 )
             }
@@ -212,7 +222,7 @@ fun DeviceGaugeMeter(
             text = String.format("%.1f m", distanceMeters),
             fontSize = 38.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF0F172A)
+            color = TextPrimary
         )
     }
 }

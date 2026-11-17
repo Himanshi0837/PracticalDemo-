@@ -1,5 +1,7 @@
+
 package com.example.exam.core.network
 
+import com.google.gson.JsonParseException
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -7,58 +9,75 @@ import java.net.UnknownHostException
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
- * Executes a network call safely, translating raw network and HTTP exceptions
- * into structured [ApiResult] instances.
+ * Executes a network call safely and converts network/API exceptions
+ * into structured ApiResult instances.
  *
- * Crucial: Re-throws [CancellationException] so Kotlin coroutine cancellation
- * propagates properly without getting swallowed into an error state.
+ * CancellationException must be rethrown so coroutine cancellation
+ * works correctly.
  */
 suspend fun <T> safeApiCall(
     apiCall: suspend () -> T
 ): ApiResult<T> {
+
     return try {
         val result = apiCall()
         ApiResult.Success(result)
+
     } catch (e: CancellationException) {
         throw e
+
     } catch (e: UnknownHostException) {
         ApiResult.Error(
-            message = "Unable to resolve host. Check your internet connection.",
-            code = null,
+            message = "No internet connection. Please check your network.",
             throwable = NetworkException.NoInternetException(cause = e)
         )
+
     } catch (e: SocketTimeoutException) {
         ApiResult.Error(
             message = "Connection timed out. Please try again.",
-            code = null,
             throwable = NetworkException.TimeoutException(cause = e)
         )
+
     } catch (e: HttpException) {
+
         val code = e.code()
-        val errorMsg = when (code) {
-            401 -> "Unauthorized. Please authenticate."
-            403 -> "Forbidden. Access denied."
-            404 -> "Resource not found (404)."
-            in 500..599 -> "Internal server error ($code)."
-            else -> "Network request failed with HTTP $code."
+
+        val errorMessage = when (code) {
+            400 -> "Invalid request. Please try again."
+            401 -> "Authentication failed."
+            403 -> "You don't have permission to access this content."
+            404 -> "Requested content was not found."
+            408 -> "Request timed out. Please try again."
+            429 -> "Too many requests. Please try again later."
+            in 500..599 -> "Server is temporarily unavailable."
+            else -> "Request failed. Please try again."
         }
+
         ApiResult.Error(
-            message = errorMsg,
+            message = errorMessage,
             code = code,
-            throwable = NetworkException.ServerException(code, errorMsg)
+            throwable = NetworkException.ServerException(
+                code,
+                errorMessage
+            )
         )
+
     } catch (e: IOException) {
         ApiResult.Error(
-            message = e.localizedMessage ?: "Network I/O error occurred.",
-            code = null,
+            message = "Network error. Please check your connection.",
             throwable = NetworkException.UnknownNetworkException(cause = e)
         )
+
+    } catch (e: JsonParseException) {
+        ApiResult.Error(
+            message = "Unable to process server response.",
+            throwable = e
+        )
+
     } catch (e: Exception) {
         ApiResult.Error(
-            message = e.localizedMessage ?: "Unexpected error occurred.",
-            code = null,
+            message = "Something went wrong. Please try again.",
             throwable = e
         )
     }
 }
-

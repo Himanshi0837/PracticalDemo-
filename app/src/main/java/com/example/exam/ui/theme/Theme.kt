@@ -1,73 +1,86 @@
+
 package com.example.exam.ui.theme
 
 import android.app.Activity
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val LightColorScheme = lightColorScheme(
+
+    // Primary
     primary = PrimaryBlue,
     onPrimary = Color.White,
     primaryContainer = PrimaryContainer,
     onPrimaryContainer = OnPrimaryContainer,
-    secondary = TextSecondary,
+
+    // Secondary
+    secondary = SecondaryRose,
     onSecondary = Color.White,
+    secondaryContainer = RoseGold,
+    onSecondaryContainer = Wine,
+
+    // Tertiary
+    tertiary = RoseGold,
+    onTertiary = Wine,
+    tertiaryContainer = AppSurfaceVariant,
+    onTertiaryContainer = TextPrimary,
+
+    // Background
     background = AppBackground,
     onBackground = TextPrimary,
+
+    // Surface
     surface = AppSurface,
     onSurface = TextPrimary,
     surfaceVariant = AppSurfaceVariant,
     onSurfaceVariant = TextSecondary,
-    outline = AppBorder,
-    error = SignalRed,
-    onError = Color.White
-)
 
-private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryBlueLight,
-    onPrimary = Color(0xFF0F172A),
-    primaryContainer = Color(0xFF1E3A8A),
-    onPrimaryContainer = Color(0xFFDBEAFE),
-    secondary = Color(0xFF94A3B8),
-    onSecondary = Color(0xFF0F172A),
-    background = Color(0xFF0B1120),
-    onBackground = Color(0xFFF8FAFC),
-    surface = Color(0xFF1E293B),
-    onSurface = Color(0xFFF8FAFC),
-    surfaceVariant = Color(0xFF334155),
-    onSurfaceVariant = Color(0xFFCBD5E1),
-    outline = Color(0xFF475569),
+    // Borders
+    outline = AppBorder,
+    outlineVariant = DividerColor,
+
+    // Error
     error = SignalRed,
-    onError = Color.White
+    onError = Color.White,
+    errorContainer = SignalRedBg,
+    onErrorContainer = SignalRed,
+
+    // Inverse
+    inverseSurface = Wine,
+    inverseOnSurface = Color.White,
+    inversePrimary = PrimaryBlueLight
 )
 
 @Composable
 fun ExamTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
     val view = LocalView.current
 
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as? Activity)?.window
-            if (window != null) {
-                val insetsController = WindowCompat.getInsetsController(window, view)
-                insetsController.isAppearanceLightStatusBars = !darkTheme
-                insetsController.isAppearanceLightNavigationBars = !darkTheme
+
+            window?.let {
+                it.statusBarColor = AppBackground.toArgb()
+                it.navigationBarColor = AppBackground.toArgb()
+
+                WindowCompat.getInsetsController(it, view).apply {
+                    isAppearanceLightStatusBars = true
+                    isAppearanceLightNavigationBars = true
+                }
             }
         }
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = LightColorScheme,
         typography = Typography,
         content = content
     )

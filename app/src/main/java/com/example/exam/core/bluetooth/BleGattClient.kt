@@ -126,16 +126,20 @@ class BleGattClient(
             val address = activeAddress ?: gatt.device.address
 
             if (status != BluetoothGatt.GATT_SUCCESS) {
-                Log.e(tag, "GATT connection failed. Status: $status")
+                Log.e(tag, "GATT connection state changed with status: $status, newState: $newState")
 
                 stopRssiPolling()
                 cancelConnectionTimeout()
 
-                _connectionState.value = BleState.Error(
-                    BleError.ConnectionFailed(
-                        "GATT connection failed with status: $status"
+                if (newState == BluetoothProfile.STATE_DISCONNECTED || status == 8 || status == 19 || status == 22) {
+                    _connectionState.value = BleState.Disconnected(address)
+                } else {
+                    _connectionState.value = BleState.Error(
+                        BleError.ConnectionFailed(
+                            "GATT connection failed with status: $status"
+                        )
                     )
-                )
+                }
 
                 closeGatt(gatt)
                 return

@@ -5,6 +5,7 @@ import com.example.exam.BuildConfig
 import com.example.exam.core.common.Constants
 import com.example.exam.core.network.ApiClient
 import com.example.exam.data.remote.ApiService
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,6 +17,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
+    @Provides
+    @Singleton
+    fun provideGson(): Gson {
+        return Gson()
+    }
 
     @Provides
     @Singleton
@@ -33,7 +40,7 @@ object NetworkModule {
     ): Retrofit {
         return ApiClient.createRetrofit(
             okHttpClient = okHttpClient,
-            baseUrl = Constants.DEFAULT_BASE_URL
+            baseUrl = Constants.TMDB_BASE_URL
         )
     }
 

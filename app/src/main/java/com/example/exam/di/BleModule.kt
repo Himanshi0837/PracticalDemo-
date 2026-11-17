@@ -72,11 +72,13 @@ object BleModule {
     @Singleton
     fun provideBleManager(
         scanner: BleScanner,
-        gattClient: BleGattClient
+        gattClient: BleGattClient,
+        applicationScope: CoroutineScope
     ): BleManager {
         return BleManager(
             scanner = scanner,
-            gattClient = gattClient
+            gattClient = gattClient,
+            scope = applicationScope
         )
     }
 }

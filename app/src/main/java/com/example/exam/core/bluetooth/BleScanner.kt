@@ -55,6 +55,25 @@ class BleScanner(
     val error: StateFlow<BleError?> =
         _error.asStateFlow()
 
+    private val _activeTrackedDeviceRssi = MutableStateFlow<Double?>(null)
+    val activeTrackedDeviceRssi: StateFlow<Double?> = _activeTrackedDeviceRssi.asStateFlow()
+
+    @Volatile
+    var activeTrackedAddress: String? = null
+        private set
+
+    fun setTrackedAddress(address: String?) {
+        activeTrackedAddress = address
+        if (address == null) {
+            _activeTrackedDeviceRssi.value = null
+        } else {
+            val existing = _devicesList.value.firstOrNull { it.id.equals(address, ignoreCase = true) }
+            if (existing != null) {
+                _activeTrackedDeviceRssi.value = existing.filteredRssi
+            }
+        }
+    }
+
     private var btScanner: BluetoothLeScanner? = null
 
     private var outOfRangeJob: Job? = null
@@ -220,6 +239,10 @@ class BleScanner(
                     }
 
                     _devicesList.value = currentList
+
+                    if (address.equals(activeTrackedAddress, ignoreCase = true)) {
+                        _activeTrackedDeviceRssi.value = stableRssi
+                    }
                 }
 
             } catch (e: SecurityException) {
@@ -271,9 +294,8 @@ class BleScanner(
 
                     val freshList =
                         currentList.filter { device ->
-
-                            currentTime - device.lastSeen <=
-                                    Constants.BLE_SCAN_TIMEOUT_MS
+                            device.id.equals(activeTrackedAddress, ignoreCase = true) ||
+                                (currentTime - device.lastSeen <= Constants.BLE_SCAN_TIMEOUT_MS)
                         }
 
                     if (freshList.size != currentList.size) {

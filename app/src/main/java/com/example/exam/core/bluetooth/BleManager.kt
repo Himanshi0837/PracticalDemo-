@@ -1,7 +1,11 @@
 package com.example.exam.core.bluetooth
 
 import com.example.exam.core.bluetooth.model.BleDeviceModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import java.util.UUID
 
 /**
@@ -11,7 +15,8 @@ import java.util.UUID
  */
 class BleManager(
     private val scanner: BleScanner,
-    private val gattClient: BleGattClient
+    private val gattClient: BleGattClient,
+    private val scope: CoroutineScope
 ) {
     val isBluetoothSupported: Boolean
         get() = scanner.isBluetoothSupported
@@ -24,7 +29,23 @@ class BleManager(
     val scanError: StateFlow<BleError?> = scanner.error
 
     val connectionState: StateFlow<BleState> = gattClient.connectionState
-    val activeDeviceRssi: StateFlow<Double?> = gattClient.activeDeviceRssi
+
+    /**
+     * Seamless dual-feed RSSI:
+     * When GATT is connected, GATT polling RSSI is used.
+     * When GATT drops or between polling ticks, the live advertisement packet RSSI
+     * from BleScanner seamlessly keeps the signal, distance, and speedometer needle updating!
+     */
+    val activeDeviceRssi: StateFlow<Double?> = combine(
+        gattClient.activeDeviceRssi,
+        scanner.activeTrackedDeviceRssi
+    ) { gattRssi, scanRssi ->
+        gattRssi ?: scanRssi
+    }.stateIn(
+        scope = scope,
+        started = SharingStarted.Eagerly,
+        initialValue = null
+    )
 
     fun startScan() {
         scanner.startScan()
@@ -40,6 +61,27 @@ class BleManager(
 
     fun connect(deviceAddress: String) {
         gattClient.connect(deviceAddress)
+    }
+
+    /**
+     * Connect to GATT and simultaneously keep scan active for live advertisement tracking.
+     * This ensures the speedometer gauge needle never freezes, even if the peripheral
+     * drops its idle GATT connection.
+     */
+    fun connectAndTrack(deviceAddress: String) {
+        scanner.setTrackedAddress(deviceAddress)
+        if (!scanner.isScanning.value) {
+            scanner.startScan()
+        }
+        gattClient.connect(deviceAddress)
+    }
+
+    /**
+     * Stop tracking and disconnect GATT when leaving the detail screen.
+     */
+    fun stopTracking() {
+        scanner.setTrackedAddress(null)
+        gattClient.disconnect()
     }
 
     fun disconnect() {
@@ -63,4 +105,3 @@ class BleManager(
         gattClient.disconnect()
     }
 }
-

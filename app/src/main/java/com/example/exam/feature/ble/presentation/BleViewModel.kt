@@ -133,12 +133,9 @@ class BleViewModel @Inject constructor(
             return
         }
 
-        Log.d(TAG, "Connecting to device: $address")
-
-        // Stop discovery before starting a GATT connection.
-        bleManager.stopScan()
-
-        bleManager.connect(address)
+        Log.d(TAG, "Connecting and tracking device: $address")
+        // Keep scan active for continuous advertisement RSSI feed, and connect GATT
+        bleManager.connectAndTrack(address)
     }
 
     fun disconnectDevice() {
@@ -146,6 +143,11 @@ class BleViewModel @Inject constructor(
 
         Log.d(TAG, "User requested device disconnection")
         bleManager.disconnect()
+    }
+
+    fun stopTracking() {
+        Log.d(TAG, "Stopping device tracking and disconnecting")
+        bleManager.stopTracking()
     }
 
     fun clearMessage() {

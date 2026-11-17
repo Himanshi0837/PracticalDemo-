@@ -1,34 +1,58 @@
 package com.example.exam.data.remote
 
+import com.example.exam.data.remote.model.MovieDetailsDto
+import com.example.exam.data.remote.model.MovieResponseDto
+import com.example.exam.data.remote.model.PersonMovieCreditsResponseDto
+import com.example.exam.data.remote.model.PersonSearchResponseDto
 import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 /**
- * Common Retrofit API service definition.
- * Clean placeholder ready for tomorrow's GET, POST, PUT, PATCH, and DELETE exam endpoints.
+ * TMDB (The Movie Database) REST API interface.
  */
 interface ApiService {
 
-    // Placeholder endpoint for connectivity validation
-    @GET("/")
-    suspend fun checkHealth(): Map<String, Any>
+    @GET("trending/movie/day")
+    suspend fun getTrendingMovies(
+        @Query("page") page: Int = 1
+    ): MovieResponseDto
 
-    /*
-     * Location reserved for tomorrow's exam endpoints:
-     *
-     * @GET("items")
-     * suspend fun getItems(): List<ItemDto>
-     *
-     * @POST("items")
-     * suspend fun createItem(@Body item: CreateItemDto): ItemDto
-     *
-     * @PUT("items/{id}")
-     * suspend fun updateItem(@Path("id") id: String, @Body item: UpdateItemDto): ItemDto
-     *
-     * @PATCH("items/{id}")
-     * suspend fun patchItem(@Path("id") id: String, @Body updates: Map<String, Any>): ItemDto
-     *
-     * @DELETE("items/{id}")
-     * suspend fun deleteItem(@Path("id") id: String): Unit
-     */
+    @GET("movie/popular")
+    suspend fun getPopularMovies(
+        @Query("page") page: Int = 1
+    ): MovieResponseDto
+
+    @GET("movie/top_rated")
+    suspend fun getTopRatedMovies(
+        @Query("page") page: Int = 1
+    ): MovieResponseDto
+
+    @GET("movie/upcoming")
+    suspend fun getUpcomingMovies(
+        @Query("page") page: Int = 1
+    ): MovieResponseDto
+
+    @GET("search/movie")
+    suspend fun searchMovies(
+        @Query("query") query: String,
+        @Query("page") page: Int = 1
+    ): MovieResponseDto
+
+    @GET("search/person")
+    suspend fun searchPersons(
+        @Query("query") query: String,
+        @Query("page") page: Int = 1
+    ): PersonSearchResponseDto
+
+    @GET("person/{person_id}/movie_credits")
+    suspend fun getPersonMovieCredits(
+        @Path("person_id") personId: Int
+    ): PersonMovieCreditsResponseDto
+
+    @GET("movie/{movie_id}")
+    suspend fun getMovieDetails(
+        @Path("movie_id") movieId: Int,
+        @Query("append_to_response") appendToResponse: String = "credits"
+    ): MovieDetailsDto
 }
-

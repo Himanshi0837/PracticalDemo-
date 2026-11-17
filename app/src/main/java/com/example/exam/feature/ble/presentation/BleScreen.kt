@@ -64,6 +64,16 @@ import com.example.exam.core.bluetooth.BleError
 import com.example.exam.core.bluetooth.BlePermissionHelper
 import com.example.exam.feature.ble.presentation.components.BleRadarVisual
 import com.example.exam.feature.ble.presentation.components.DeviceCardItem
+import com.example.exam.ui.theme.AppBackground
+import com.example.exam.ui.theme.PrimaryBlue
+import com.example.exam.ui.theme.PrimaryBlueDark
+import com.example.exam.ui.theme.PrimaryContainer
+import com.example.exam.ui.theme.SecondaryRose
+import com.example.exam.ui.theme.SignalRed
+import com.example.exam.ui.theme.SignalRedBg
+import com.example.exam.ui.theme.TextPrimary
+import com.example.exam.ui.theme.TextSecondary
+import com.example.exam.ui.theme.Wine
 
 /**
  * Main BLE Scanner Screen following the exact concept and UI of BLEDemo:
@@ -150,7 +160,7 @@ fun BleScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFF8FAFC))
+            .background(AppBackground)
             .padding(horizontal = 20.dp)
     ) {
         Spacer(modifier = Modifier.height(16.dp))
@@ -163,10 +173,10 @@ fun BleScreen(
         ) {
             Text(
                 text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color(0xFF0F172A), fontWeight = FontWeight.Bold)) {
+                    withStyle(style = SpanStyle(color = TextPrimary, fontWeight = FontWeight.Bold)) {
                         append("BLE ")
                     }
-                    withStyle(style = SpanStyle(color = Color(0xFF2563EB), fontWeight = FontWeight.Bold)) {
+                    withStyle(style = SpanStyle(color = SecondaryRose, fontWeight = FontWeight.Bold)) {
                         append("Tracker")
                     }
                 },
@@ -183,7 +193,7 @@ fun BleScreen(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
-                            .background(Color(0xFFEFF6FF))
+                            .background(PrimaryContainer)
                             .clickable { onToggleScan() }
                             .padding(horizontal = 14.dp, vertical = 6.dp),
                         contentAlignment = Alignment.Center
@@ -192,7 +202,7 @@ fun BleScreen(
                             Icon(
                                 imageVector = if (state.isScanning) Icons.Default.Stop else Icons.Default.PlayArrow,
                                 contentDescription = if (state.isScanning) "Stop" else "Scan",
-                                tint = Color(0xFF2563EB),
+                                tint = Wine,
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
@@ -200,7 +210,7 @@ fun BleScreen(
                                 text = if (state.isScanning) "STOP" else "SCAN",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF2563EB)
+                                color = Wine
                             )
                         }
                     }
@@ -215,7 +225,7 @@ fun BleScreen(
                     Icon(
                         imageVector = Icons.Default.Refresh,
                         contentDescription = "Refresh",
-                        tint = Color(0xFF64748B),
+                        tint = TextSecondary,
                         modifier = Modifier.size(22.dp)
                     )
                 }
@@ -236,7 +246,7 @@ fun BleScreen(
                 item(key = "status_banner") {
                     Card(
                         shape = RoundedCornerShape(14.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF2F2)),
+                        colors = CardDefaults.cardColors(containerColor = SignalRedBg),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
@@ -246,14 +256,14 @@ fun BleScreen(
                             Icon(
                                 imageVector = Icons.Default.Info,
                                 contentDescription = "Status",
-                                tint = Color(0xFFDC2626),
+                                tint = SignalRed,
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = statusMessage,
                                 fontSize = 13.sp,
-                                color = Color(0xFF991B1B),
+                                color = SignalRed,
                                 fontWeight = FontWeight.Medium
                             )
                         }
@@ -261,7 +271,7 @@ fun BleScreen(
                 }
             }
 
-            // Top Blue Banner Card: "Ready to Scan" with blue gradient & BleRadarVisual animation
+            // Top Banner Card: "Ready to Scan" with theme gradient & BleRadarVisual animation
             item(key = "banner_card") {
                 Card(
                     shape = RoundedCornerShape(26.dp),
@@ -274,9 +284,9 @@ fun BleScreen(
                             .background(
                                 Brush.linearGradient(
                                     colors = listOf(
-                                        Color(0xFF2563EB),
-                                        Color(0xFF1D4ED8),
-                                        Color(0xFF0284C7)
+                                        PrimaryBlue,
+                                        Wine,
+                                        PrimaryBlueDark
                                     )
                                 )
                             )
@@ -311,7 +321,7 @@ fun BleScreen(
                                     shape = RoundedCornerShape(24.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = Color.White,
-                                        contentColor = Color(0xFF2563EB)
+                                        contentColor = PrimaryBlue
                                     ),
                                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
@@ -320,7 +330,7 @@ fun BleScreen(
                                         Icon(
                                             imageVector = if (state.isScanning) Icons.Default.Stop else Icons.Default.PlayArrow,
                                             contentDescription = null,
-                                            tint = Color(0xFF2563EB),
+                                            tint = PrimaryBlue,
                                             modifier = Modifier.size(16.dp)
                                         )
                                         Spacer(modifier = Modifier.width(6.dp))
@@ -356,14 +366,14 @@ fun BleScreen(
                         text = "Nearby Devices",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0F172A)
+                        color = TextPrimary
                     )
 
                     if (state.devices.isNotEmpty()) {
                         Text(
                             text = "${state.devices.size} found",
                             fontSize = 13.sp,
-                            color = Color(0xFF64748B),
+                            color = TextSecondary,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -382,7 +392,7 @@ fun BleScreen(
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             if (state.isScanning) {
                                 CircularProgressIndicator(
-                                    color = Color(0xFF2563EB),
+                                    color = SecondaryRose,
                                     strokeWidth = 3.dp,
                                     modifier = Modifier.size(36.dp)
                                 )
@@ -391,26 +401,26 @@ fun BleScreen(
                                     text = "Searching for nearby devices...",
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = Color(0xFF0F172A)
+                                    color = TextPrimary
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = "Keep your peripherals powered on and advertising",
                                     fontSize = 13.sp,
-                                    color = Color(0xFF64748B)
+                                    color = TextSecondary
                                 )
                             } else {
                                 Text(
                                     text = "No devices found",
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = Color(0xFF0F172A)
+                                    color = TextPrimary
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = "Tap 'Start Scanning' to discover nearby Bluetooth devices.",
                                     fontSize = 13.sp,
-                                    color = Color(0xFF64748B),
+                                    color = TextSecondary,
                                     textAlign = TextAlign.Center
                                 )
                             }

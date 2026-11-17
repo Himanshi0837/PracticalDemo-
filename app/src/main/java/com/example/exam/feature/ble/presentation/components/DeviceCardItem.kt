@@ -41,9 +41,15 @@ import androidx.compose.ui.unit.sp
 import com.example.exam.core.bluetooth.model.BleDeviceCategory
 import com.example.exam.core.bluetooth.model.BleDeviceModel
 import com.example.exam.core.bluetooth.signal.ProximityLevel
+import com.example.exam.ui.theme.AppBorder
+import com.example.exam.ui.theme.AppSurface
+import com.example.exam.ui.theme.PrimaryContainer
 import com.example.exam.ui.theme.SignalAmber
 import com.example.exam.ui.theme.SignalGreen
 import com.example.exam.ui.theme.SignalRed
+import com.example.exam.ui.theme.TextPrimary
+import com.example.exam.ui.theme.TextSecondary
+import com.example.exam.ui.theme.Wine
 
 /**
  * Device Card Item matching BLEDemo's Nearby Devices list.
@@ -60,8 +66,8 @@ fun DeviceCardItem(
             .fillMaxWidth()
             .clickable { onFindClick(device) },
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFF1F5F9)),
+        colors = CardDefaults.cardColors(containerColor = AppSurface),
+        border = BorderStroke(1.dp, AppBorder),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
@@ -84,13 +90,13 @@ fun DeviceCardItem(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(RoundedCornerShape(14.dp))
-                    .background(Color(0xFFEFF6FF)),
+                    .background(PrimaryContainer),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = iconVector,
                     contentDescription = device.name,
-                    tint = Color(0xFF2563EB),
+                    tint = Wine,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -105,7 +111,7 @@ fun DeviceCardItem(
                     text = device.name,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF0F172A)
+                    color = TextPrimary
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -127,7 +133,7 @@ fun DeviceCardItem(
                     Text(
                         text = "${device.proximity.label} • ${String.format("%.1f", device.distanceMeters)}m",
                         fontSize = 13.sp,
-                        color = Color(0xFF64748B),
+                        color = TextSecondary,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -137,10 +143,10 @@ fun DeviceCardItem(
             OutlinedButton(
                 onClick = { onFindClick(device) },
                 shape = RoundedCornerShape(20.dp),
-                border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                border = BorderStroke(1.dp, AppBorder),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color(0xFFF8FAFC),
-                    contentColor = Color(0xFF2563EB)
+                    containerColor = PrimaryContainer,
+                    contentColor = Wine
                 ),
                 contentPadding = PaddingValues(
                     horizontal = 16.dp,
