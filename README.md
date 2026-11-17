@@ -204,3 +204,7 @@ The app automatically requests necessary permissions on runtime using `BlePermis
 4. **Offline Movie Caching**:
    - Favourites and favourite movie details are completely persistent offline. However, browsing uncached category pages requires an active internet connection to communicate with TMDB servers.
 
+## App Screenshots
+The screenshots assets/ folder contains screenshots of the application UI.
+Use these images to give developers and reviewers a quick visual
+reference for the app's screens and user flows.
