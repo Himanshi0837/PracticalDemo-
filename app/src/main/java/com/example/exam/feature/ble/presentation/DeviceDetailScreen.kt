@@ -75,6 +75,9 @@ fun DeviceDetailScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
+    val isConnected = state.connectionState is BleState.Connected ||
+            state.connectionState is BleState.DiscoveringServices
+    val isConnecting = state.connectionState is BleState.Connecting
 
     // Find the device from the discovered list or fallback
     val device = state.devices.find { it.id == deviceId }
@@ -288,105 +291,105 @@ fun DeviceDetailScreen(
 
         Spacer(modifier = Modifier.height(14.dp))
 
-//        // 6. GATT Connection Status & Controls Card
-//        Card(
-//            modifier = Modifier.fillMaxWidth(),
-//            shape = RoundedCornerShape(16.dp),
-//            colors = CardDefaults.cardColors(containerColor = Color.White),
-//            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-//        ) {
-//            Column(modifier = Modifier.padding(16.dp)) {
-//                val (statusText, statusColor, statusBg) = when (val conn = state.connectionState) {
-//                    is BleState.Connecting -> Triple("Connecting...", SignalAmber, SignalAmberBg)
-//                    is BleState.DiscoveringServices -> Triple("Discovering Services...", SignalAmber, SignalAmberBg)
-//                    is BleState.Connected -> Triple("Connected", SignalGreen, SignalGreenBg)
-//                    is BleState.Disconnected -> Triple("Disconnected", Color(0xFF64748B), Color(0xFFF1F5F9))
-//                    is BleState.Error -> Triple("Error: ${conn.error}", SignalRed, SignalRedBg)
-//                    else -> Triple("Idle", Color(0xFF64748B), Color(0xFFF1F5F9))
-//                }
-//
-//                Row(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    horizontalArrangement = Arrangement.SpaceBetween,
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Text(
-//                        text = "GATT Connection",
-//                        fontSize = 13.sp,
-//                        fontWeight = FontWeight.Bold,
-//                        color = Color(0xFF0F172A)
-//                    )
-//
-//                    Surface(
-//                        color = statusBg,
-//                        shape = RoundedCornerShape(8.dp)
-//                    ) {
-//                        Row(
-//                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-//                            verticalAlignment = Alignment.CenterVertically
-//                        ) {
-//                            if (isConnecting) {
-//                                CircularProgressIndicator(
-//                                    color = statusColor,
-//                                    strokeWidth = 2.dp,
-//                                    modifier = Modifier.size(12.dp)
-//                                )
-//                                Spacer(modifier = Modifier.width(6.dp))
-//                            }
-//                            Text(
-//                                text = statusText,
-//                                color = statusColor,
-//                                fontSize = 12.sp,
-//                                fontWeight = FontWeight.SemiBold
-//                            )
-//                        }
-//                    }
-//                }
-//
-//                Spacer(modifier = Modifier.height(14.dp))
-//
-////                Row(
-////                    modifier = Modifier.fillMaxWidth(),
-////                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-////                ) {
-////                    Button(
-////                        onClick = { viewModel.connectDevice(deviceId) },
-////                        enabled = !isConnected && !isConnecting,
-////                        shape = RoundedCornerShape(12.dp),
-////                        colors = ButtonDefaults.buttonColors(
-////                            containerColor = Color(0xFF2563EB)
-////                        ),
-////                        modifier = Modifier
-////                            .weight(1f)
-////                            .height(44.dp)
-////                    ) {
-////                        Text(
-////                            text = if (isConnecting) "Connecting..." else "Connect",
-////                            fontSize = 13.sp,
-////                            fontWeight = FontWeight.Bold
-////                        )
-////                    }
-////
-////                    OutlinedButton(
-////                        onClick = { viewModel.disconnectDevice() },
-////                        enabled = isConnected || isConnecting,
-////                        shape = RoundedCornerShape(12.dp),
-////                        colors = ButtonDefaults.outlinedButtonColors(
-////                            contentColor = Color(0xFFEF4444)
-////                        ),
-////                        modifier = Modifier
-////                            .weight(1f)
-////                            .height(44.dp)
-////                    ) {
-////                        Text(
-////                            text = "Disconnect",
-////                            fontSize = 13.sp,
-////                            fontWeight = FontWeight.Bold
-////                        )
-////                    }
-////                }
-//            }
-//        }
+        // 6. GATT Connection Status & Controls Card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                val (statusText, statusColor, statusBg) = when (val conn = state.connectionState) {
+                    is BleState.Connecting -> Triple("Connecting...", SignalAmber, SignalAmberBg)
+                    is BleState.DiscoveringServices -> Triple("Discovering Services...", SignalAmber, SignalAmberBg)
+                    is BleState.Connected -> Triple("Connected", SignalGreen, SignalGreenBg)
+                    is BleState.Disconnected -> Triple("Disconnected", Color(0xFF64748B), Color(0xFFF1F5F9))
+                    is BleState.Error -> Triple("Error: ${conn.error}", SignalRed, SignalRedBg)
+                    else -> Triple("Idle", Color(0xFF64748B), Color(0xFFF1F5F9))
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "GATT Connection",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF0F172A)
+                    )
+
+                    Surface(
+                        color = statusBg,
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (isConnecting) {
+                                CircularProgressIndicator(
+                                    color = statusColor,
+                                    strokeWidth = 2.dp,
+                                    modifier = Modifier.size(12.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                            }
+                            Text(
+                                text = statusText,
+                                color = statusColor,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Button(
+                        onClick = { viewModel.connectDevice(deviceId) },
+                        enabled = !isConnected && !isConnecting,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF2563EB)
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(44.dp)
+                    ) {
+                        Text(
+                            text = if (isConnecting) "Connecting..." else "Connect",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    OutlinedButton(
+                        onClick = { viewModel.disconnectDevice() },
+                        enabled = isConnected || isConnecting,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = Color(0xFFEF4444)
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(44.dp)
+                    ) {
+                        Text(
+                            text = "Disconnect",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
     }
