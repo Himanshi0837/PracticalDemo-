@@ -1,225 +1,392 @@
-# Movie Explorer & BLE Device Scanner
+# Movie Explorer – Android Application
 
-A native Android application built with **Kotlin** and **Jetpack Compose**. The project brings together two independent app experiences:
+A native Android application built using **Kotlin, XML layouts, and Android Jetpack components**.
 
-- **Movie Explorer** — browse movies from The Movie Database (TMDB), search by movie title or person, view movie details, and save favourites locally.
-- **BLE Device Scanner** — discover nearby Bluetooth Low Energy devices, inspect signal strength, connect to a device over GATT, and view an estimated proximity distance.
+Movie Explorer allows users to discover movies, search for movies, explore different categories, view detailed movie information, and save their favourite movies.
 
-The app uses a layered MVVM structure, Hilt dependency injection, Kotlin Coroutines and Flow, Retrofit, and Material 3.
+The application uses **The Movie Database (TMDB) API** to retrieve movie information and artwork.
 
-> **Project status:** This README was checked against the source code and Gradle configuration included in this repository archive. It describes the implementation visible in that source snapshot; it does not claim that a fresh build or runtime test was performed as part of the documentation review.
+## Project Overview
+
+Movie Explorer provides three main screens:
+
+1. **Login Screen** – A login interface with email and password validation using local validation logic.
+2. **Movie Explorer** – Browse trending, popular, top-rated, upcoming, and favourite movies.
+3. **Movie Detail Screen** – View movie posters, backdrops, ratings, release dates, descriptions, and other information.
+
+The application is developed using XML-based Android UI layouts rather than Jetpack Compose.
 
 ---
 
 ## Screenshots
 
-The screenshots below are included in the [`screenshots/`](screenshots/) directory.
+Place your latest application screenshots in the `screenshots/` directory.
+
+### Login Screen
+
+![Login Screen](screenshots/login.png)
 
 ### Movie Explorer
 
-| Trending movies | Search movies | Upcoming movies |
+| Trending Movies | Movie Search | Movie Categories |
 |---|---|---|
-| ![Movie Explorer trending](screenshots/movie-explorer-trending.png) | ![Movie Explorer search](screenshots/movie-explorer-search.png) | ![Movie Explorer upcoming](screenshots/movie-explorer-upcoming.png) |
+| ![Trending](screenshots/movie-explorer-trending.png) | ![Search](screenshots/movie-explorer-search.png) | ![Categories](screenshots/movie-explorer-upcoming.png) |
 
-### Movie details
+### Movie Details
 
-![Movie details](screenshots/movie-details.png)
+![Movie Details](screenshots/movie-details.png)
 
-### BLE Device Scanner
-
-| Nearby BLE devices | Device details | Live tracking |
-|---|---|---|
-| ![BLE device scanner](screenshots/ble-device-scanner.png) | ![BLE device details](screenshots/ble-device-details.png) | ![BLE live tracking](screenshots/ble-device-live-tracking.png) |
+*Update the screenshot filenames if your actual image filenames are different.*
 
 ---
 
-## Project Overview
+## Features
 
-### 1. Movie Explorer
+### 1. Login Screen
 
-The Movie Explorer feature uses TMDB's REST API to retrieve movie and person information.
-
-Implemented functionality:
-
-- **Movie categories:** Trending, Popular, Top Rated, Upcoming, and Favourites.
-- **Movie grid:** a two-column Compose grid displaying poster artwork and movie information.
-- **Movie search:** searches TMDB by movie title.
-- **Person search:** searches TMDB people, then loads movie credits for the first matching person returned by the API.
-- **Debounced input:** waits 400 ms after the latest search text change before starting a search.
-- **Pagination:** loads additional pages for category browsing and movie-title search.
-- **Movie details:** requests a movie detail response with `credits` appended. The detail UI displays available movie information such as overview, runtime, genres, director, and cast.
-- **Favourites:** saves and removes favourite movies using Android `SharedPreferences`, with Gson serialization. Favourites remain available after app restarts.
-
-**Offline behaviour:** Favourite movie data is stored locally. The category feeds, search, and movie-detail requests use TMDB and therefore require network access. The project declares `ACCESS_NETWORK_STATE`, but this source snapshot does not contain a dedicated connectivity observer or a separate full-screen offline state.
-
-### 2. BLE Device Scanner
-
-The BLE feature discovers nearby Bluetooth Low Energy peripherals and provides a device detail view for signal and connection information.
+The application starts with a login screen.
 
 Implemented functionality:
 
-- **BLE scanning:** discovers nearby BLE devices and presents them in a device list.
-- **Runtime permissions:** requests the Bluetooth permissions required by the Android version.
-- **Animated radar visual:** a Compose Canvas-based animated radar graphic is used in the scanner screen.
-- **Device detail screen:** displays the selected device's signal information, estimated distance, proximity level, and GATT connection state.
-- **GATT operations:** supports connecting and disconnecting, reading characteristics, writing characteristics, and enabling/disabling notifications through the BLE GATT client.
-- **RSSI smoothing:** applies a per-device 1D Kalman filter to scan RSSI readings and maintains a rolling FIFO buffer of up to 10 filtered values.
-- **Distance estimate:** converts RSSI to an estimated distance using a log-distance path-loss formula. The configured defaults are TX power `-59 dBm` and path-loss exponent `2.2`.
-- **Proximity gauge:** displays a semi-circular gauge with Near, Closer, and Far zones.
-- **Tracked-device signal feed:** while a device is being tracked, the manager combines GATT-polled RSSI with the scanner's tracked-device advertisement RSSI, preferring the GATT value when available.
+- Email input field.
+- Password input field.
+- Password visibility toggle.
+- Email format validation.
+- Required-field validation.
+- Minimum password length validation.
+- Login button with validation feedback.
+- Navigation to Movie Explorer after successful local validation.
 
-**Distance accuracy note:** RSSI-based distance is an estimate, not a precise measurement. Walls, device orientation, antenna differences, interference, and the environment can change signal strength.
+**Note:** Login currently uses local validation only. It does not authenticate users through a backend, Firebase, or a remote authentication service.
 
----
+### 2. Movie Explorer
 
-## Architecture
+The Movie Explorer screen retrieves movie information from the TMDB API.
 
-The source code follows a presentation/data separation with MVVM and repository-based data access.
+Implemented functionality:
 
-```text
-com.example.exam
-├── core
-│   ├── bluetooth
-│   │   ├── BleManager
-│   │   ├── BleScanner
-│   │   ├── BleGattClient
-│   │   ├── BlePermissionHelper
-│   │   ├── model
-│   │   └── signal
-│   │       ├── KalmanFilter
-│   │       ├── RssiWindowBuffer
-│   │       └── DistanceEstimator
-│   ├── common
-│   ├── navigation
-│   └── network
-├── data
-│   ├── local
-│   │   └── FavouriteMoviesStore
-│   ├── remote
-│   │   └── ApiService
-│   └── repository
-│       └── MovieRepository
-├── di
-│   ├── NetworkModule
-│   └── BleModule
-├── feature
-│   ├── api
-│   │   └── presentation
-│   └── ble
-│       └── presentation
-└── ui
-    └── theme
-```
+- **Trending Movies:** Discover currently trending movies.
+- **Popular Movies:** Browse popular movies.
+- **Top Rated Movies:** Explore highly rated movies.
+- **Upcoming Movies:** Discover upcoming releases.
+- **Favourites:** View movies saved as favourites.
+- **Movie Grid:** Display movies in a two-column grid layout.
+- **Movie Search:** Search movies by title.
+- **Person Search:** Support searching for people and retrieving their movie credits, where enabled.
+- **Debounced Search:** Wait approximately 400 milliseconds after the latest search input before triggering a search.
+- **Pagination:** Load additional movie results when scrolling near the bottom of the list.
+- **Search Keyboard Handling:** Hide the keyboard and scroll the Movie Explorer to the top when submitting a search.
+- **Loading Indicator:** Display a full-screen circular progress indicator while movie data is loading, including when switching categories.
+- **Empty State:** Display an appropriate message when no movies are available.
+- **Error Handling:** Provide a retry option when an API request fails.
 
-### Main responsibilities
+### 3. Movie Detail Screen
 
-- **Presentation:** Compose screens and UI components render state and forward user actions to ViewModels.
-- **ViewModels:** `ApiViewModel` and `BleViewModel` expose UI state using Kotlin `StateFlow` and coordinate feature actions.
-- **Repository:** `MovieRepository` provides a single access point for TMDB requests and locally stored favourites.
-- **Network layer:** Retrofit defines TMDB endpoints; OkHttp configures timeouts, Bearer-token authentication, and debug logging. API calls are wrapped by `safeApiCall`.
-- **BLE coordination:** `BleManager` coordinates `BleScanner` and `BleGattClient` and exposes BLE state to the ViewModel.
-- **Dependency injection:** Hilt modules provide network and BLE dependencies.
+Selecting a movie opens its dedicated detail screen.
+
+Implemented functionality:
+
+- Movie backdrop image.
+- Movie poster image.
+- Movie title.
+- Release year.
+- Movie rating.
+- Original language.
+- Movie overview.
+- Original movie title.
+- Total vote count.
+- Add to Favourites button.
+- Remove from Favourites functionality.
+- Back navigation to Movie Explorer.
+
+Movie images are loaded using Coil.
+
+### 4. Favourite Movies
+
+Users can save movies to their favourites list.
+
+Implemented functionality:
+
+- Add movies to favourites.
+- Remove movies from favourites.
+- Display saved movies in the Favourites category.
+- Maintain favourite movie data locally using Android SharedPreferences and Gson serialization.
+- Preserve saved favourites across application restarts.
 
 ---
 
 ## Technology Stack
 
-Versions below are taken from `gradle/libs.versions.toml`, `gradle/wrapper/gradle-wrapper.properties`, and the module Gradle file in the uploaded project snapshot.
+| Technology | Purpose |
+|---|---|
+| Kotlin | Primary programming language |
+| XML Layouts | Android UI development |
+| Android Views | UI components |
+| ViewBinding | Access XML views safely |
+| Material Components | UI components and styling |
+| ConstraintLayout | Flexible screen layouts |
+| LinearLayout | Organize UI components |
+| FrameLayout | Layered UI and loading overlays |
+| NestedScrollView | Scrollable screens |
+| RecyclerView | Display movie lists |
+| Navigation Component | Screen navigation |
+| MVVM | Application architecture |
+| StateFlow | Reactive UI state management |
+| Kotlin Coroutines | Asynchronous operations |
+| Retrofit | REST API communication |
+| OkHttp | HTTP client |
+| Coil | Movie image loading |
+| Hilt | Dependency injection |
+| Gson | JSON serialization |
+| SharedPreferences | Local favourite storage |
+| Gradle | Build automation |
 
-| Technology | Configured version |
-|---|---:|
-| Android Gradle Plugin | `9.4.1` |
-| Gradle wrapper | `9.6.0` |
-| Kotlin | `2.2.10` |
-| Jetpack Compose BOM | `2026.02.01` |
-| AndroidX Core KTX | `1.19.1` |
-| Lifecycle | `2.11.0` |
-| Activity Compose | `1.13.0` |
-| Navigation Compose | `2.8.8` |
-| Retrofit | `2.11.0` |
-| OkHttp | `4.12.0` |
-| Coil Compose | `2.7.0` |
-| Kotlinx Coroutines | `1.10.1` |
-| Hilt | `2.60.1` |
-| Hilt Navigation Compose | `1.2.0` |
-| KSP | `2.3.6` |
-| Gson | Provided through Retrofit's Gson converter |
+**Development environment**
 
-Other implementation technologies include Material 3, Compose Material Icons Extended, Java 17 toolchain, and AndroidX Lifecycle-aware state collection.
+- Android Studio
+- JDK 17
+- Android SDK
+- Kotlin
+- Gradle
 
 ---
 
-## Android App Configuration
+## Architecture
 
-The values below are read from `app/build.gradle.kts`:
+The application follows the **MVVM (Model–View–ViewModel)** architecture with separation between presentation, data, and network responsibilities.
 
-| Setting | Configured value |
-|---|---:|
+### Architecture Overview
+
+```text
+User Interface (XML)
+        |
+        v
+Fragments
+        |
+        v
+ViewModel
+        |
+        v
+Repository
+       / \
+      /   \
+     v     v
+ TMDB API  Local Storage
+ Retrofit  SharedPreferences
+     \     /
+      \   /
+       v
+    UI State
+    StateFlow
+       |
+       v
+ Fragments update UI
+```
+
+### Main Responsibilities
+
+**Presentation Layer**
+
+- Displays application screens using XML layouts.
+- Handles user interactions.
+- Observes ViewModel state.
+- Updates the UI based on loading, success, and error states.
+
+**ViewModel Layer**
+
+- `ApiViewModel` manages Movie Explorer state and actions.
+- Handles category selection.
+- Manages movie search.
+- Coordinates pagination.
+- Manages favourite operations.
+- Loads selected movie details.
+- Exposes UI state using Kotlin StateFlow.
+
+**Data Layer**
+
+- `MovieRepository` manages movie data operations.
+- Retrieves information from the TMDB API.
+- Provides access to locally stored favourite movies.
+
+**Network Layer**
+
+- Retrofit defines TMDB API endpoints.
+- OkHttp handles HTTP requests.
+- Bearer-token authentication is used for API requests.
+- Gson handles JSON serialization.
+
+**Dependency Injection**
+
+- Hilt manages dependency injection across the application.
+
+---
+
+## Project Structure
+
+The project uses a feature-based package structure.
+
+```text
+com.example.exam
+│
+├── core
+│   ├── common
+│   │   └── Constants.kt
+│   ├── network
+│   └── navigation
+│
+├── data
+│   ├── local
+│   │   └── FavouriteMoviesStore.kt
+│   │
+│   ├── remote
+│   │   ├── ApiService.kt
+│   │   └── model
+│   │
+│   └── repository
+│       └── MovieRepository.kt
+│
+├── di
+│   └── NetworkModule.kt
+│
+├── feature
+│   ├── login
+│   │   └── presentation
+│   │
+│   └── api
+│       └── presentation
+│           ├── ApiFragment.kt
+│           ├── ApiViewModel.kt
+│           ├── MovieDetailFragment.kt
+│           └── MovieGridAdapter.kt
+│
+└── ui
+    └── theme
+```
+
+### Important XML Resources
+
+```text
+res
+│
+├── layout
+│   ├── activity_main.xml
+│   ├── fragment_login.xml
+│   ├── fragment_api.xml
+│   ├── fragment_device_detail.xml
+│   └── item_movie.xml
+│
+├── navigation
+│   └── nav_graph.xml
+│
+├── drawable
+│   ├── bg_back_button.xml
+│   └── ic_arrow_back.xml
+│
+├── values
+│   ├── colors.xml
+│   ├── strings.xml
+│   └── themes.xml
+│
+└── mipmap
+```
+
+*The structure above describes the current intended organization. Adjust filenames or folders if they differ in your local project.*
+
+---
+
+## TMDB API Integration
+
+The application uses The Movie Database (TMDB) REST API.
+
+**API Base URL**
+
+```text
+https://api.themoviedb.org/3/
+```
+
+**Image URLs**
+
+Poster images:
+
+```text
+https://image.tmdb.org/t/p/w500
+```
+
+Backdrop images:
+
+```text
+https://image.tmdb.org/t/p/original
+```
+
+### API Endpoints
+
+| Feature | Endpoint |
+|---|---|
+| Trending Movies | `trending/movie/day` |
+| Popular Movies | `movie/popular` |
+| Top Rated Movies | `movie/top_rated` |
+| Upcoming Movies | `movie/upcoming` |
+| Search Movies | `search/movie` |
+| Search People | `search/person` |
+| Person Movie Credits | `person/{person_id}/movie_credits` |
+| Movie Details | `movie/{movie_id}` |
+
+Movie details can also request additional credits using:
+
+```text
+append_to_response=credits
+```
+
+### API Authentication
+
+The application uses a TMDB Bearer token for API authentication.
+
+The token is configured through the application's network configuration.
+
+**Important security recommendation:**
+
+Do not commit real API tokens or credentials to a public GitHub repository.
+
+Use a local, untracked configuration file or a secure build-time secrets mechanism. If a credential has already been exposed publicly, revoke or rotate it.
+
+For TMDB documentation, visit:
+
+https://developer.themoviedb.org/docs
+
+---
+
+## Android Configuration
+
+Current project configuration:
+
+| Setting | Value |
+|---|---|
 | Application ID | `com.example.exam` |
 | Namespace | `com.example.exam` |
-| `versionCode` | `1` |
-| `versionName` | `1.0` |
-| `minSdk` | `26` |
-| `compileSdk` | `37` |
-| `targetSdk` | `37` |
-| Java source/target compatibility | `17` |
-| Kotlin JVM toolchain | `17` |
+| Minimum SDK | 26 |
+| Compile SDK | 37 |
+| Target SDK | 37 |
+| Java Version | 17 |
+| Kotlin JVM Toolchain | 17 |
+| Version Code | 1 |
+| Version Name | 1.0 |
 
-The launcher label is currently `Exam`, as configured in `app/src/main/res/values/strings.xml`.
-
----
-
-## TMDB API Configuration
-
-The Movie Explorer uses the TMDB v3 API.
-
-- **API base URL:** `https://api.themoviedb.org/3/`
-- **Poster image base URL:** `https://image.tmdb.org/t/p/w500`
-- **Backdrop image base URL:** `https://image.tmdb.org/t/p/original`
-
-The Retrofit service currently defines these endpoints:
-
-| Feature | TMDB endpoint |
-|---|---|
-| Trending movies | `trending/movie/day` |
-| Popular movies | `movie/popular` |
-| Top-rated movies | `movie/top_rated` |
-| Upcoming movies | `movie/upcoming` |
-| Search movies | `search/movie` |
-| Search people | `search/person` |
-| Person movie credits | `person/{person_id}/movie_credits` |
-| Movie details and credits | `movie/{movie_id}` with `append_to_response=credits` |
-
-### API credentials
-
-The current source reads the TMDB Bearer token from `core/common/Constants.kt`, and `ApiClient` adds it to outgoing requests using the `Authorization` header.
-
-**Before publishing this repository:** do not commit API keys or access tokens in source control. The uploaded source snapshot contains a credential value in `Constants.kt`. Revoke or rotate that credential if it has been shared publicly, then move credentials into a local, untracked configuration or a secure build-time secrets process. Do not paste real credentials into this README.
+Refer to `app/build.gradle.kts` for the latest dependency and build configuration.
 
 ---
 
 ## Android Permissions
 
-The manifest declares the following permissions:
+The Movie Explorer requires network access.
 
-### Network
+The application uses:
 
-- `android.permission.INTERNET` — TMDB API and remote image requests.
-- `android.permission.ACCESS_NETWORK_STATE` — network-state access.
+| Permission | Purpose |
+|---|---|
+| `android.permission.INTERNET` | Connect to TMDB API and retrieve movie images |
+| `android.permission.ACCESS_NETWORK_STATE` | Access network connectivity information |
 
-### Bluetooth on Android 12 (API 31) and newer
-
-- `android.permission.BLUETOOTH_SCAN` — BLE scanning; declared with `neverForLocation`.
-- `android.permission.BLUETOOTH_CONNECT` — Bluetooth device connection and GATT access.
-
-### Legacy Bluetooth and location permissions
-
-- `android.permission.BLUETOOTH` — declared for API 30 and below.
-- `android.permission.BLUETOOTH_ADMIN` — declared for API 30 and below.
-- `android.permission.ACCESS_FINE_LOCATION` — declared for API 30 and below.
-- `android.permission.ACCESS_COARSE_LOCATION` — declared for API 28 and below.
-
-The app also declares `android.hardware.bluetooth_le` as a required device feature. Devices without BLE hardware are therefore not intended targets for this app.
+No Bluetooth or BLE permissions are required.
 
 ---
 
@@ -227,108 +394,96 @@ The app also declares `android.hardware.bluetooth_le` as a required device featu
 
 ### Requirements
 
-- Android Studio with support for the configured Android Gradle Plugin.
-- JDK 17.
-- Android SDK platform 37 and the required build tools.
-- A physical Android device with BLE hardware to test BLE scanning and GATT functionality.
+Before running the project, make sure you have:
 
-### Clone and open
+- Android Studio installed.
+- JDK 17 installed.
+- Android SDK configured.
+- A valid TMDB API Bearer token.
+- Internet access.
+
+### 1. Clone the Repository
 
 ```bash
 git clone <YOUR_REPOSITORY_URL>
+```
+
+Navigate to the project directory:
+
+```bash
 cd Exam
 ```
 
-Open the project directory in Android Studio and allow Gradle sync to finish.
+### 2. Open the Project
 
-### Build a debug APK
+1. Open Android Studio.
+2. Select Open Project.
+3. Choose the cloned project directory.
+4. Wait for Gradle synchronization to finish.
+
+### 3. Configure TMDB API Credentials
+
+Configure your TMDB Bearer token in the appropriate local configuration used by the network layer.
+
+Do not upload private credentials to GitHub.
+
+### 4. Build the Application
 
 On macOS or Linux:
 
 ```bash
-./gradlew assembleDebug
+./gradlew :app:assembleDebug
 ```
 
 On Windows:
 
-```bat
-gradlew.bat assembleDebug
+```bash
+gradlew.bat :app:assembleDebug
 ```
 
-The expected debug APK location is:
+### 5. Run the Application
+
+You can run the application directly from Android Studio using an emulator or a connected Android device.
+
+### 6. Generate Debug APK
+
+The debug APK will be generated at:
 
 ```text
 app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Install using ADB:
+Install it using ADB:
 
 ```bash
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
-BLE scanning and GATT behaviour should be tested on a physical BLE-capable Android device. Emulator support for real Bluetooth behaviour is limited and depends on the emulator environment.
-
----
-
-## BLE Signal Processing Notes
-
-The BLE implementation contains these signal-processing components:
-
-1. **KalmanFilter:** a one-dimensional Kalman filter with configurable process and measurement noise.
-2. **RssiWindowBuffer:** a FIFO buffer with a default capacity of 10 filtered RSSI values; it returns an arithmetic mean.
-3. **DistanceEstimator:** estimates distance using:
-
-   ```text
-   distance = 10 ^ ((txPower - rssi) / (10 * pathLossExponent))
-   ```
-
-   The result is clamped to the range 0.1–30.0 metres and rounded to one decimal place.
-
-The default proximity thresholds in the implementation are:
-
-- **Very close:** less than 2 metres.
-- **Getting closer:** 2 to 5 metres inclusive.
-- **Far away:** greater than 5 metres.
-
-These are application-side estimates based on configured constants and should be calibrated for the target hardware and environment if more reliable distance estimates are required.
-
 ---
 
 ## Known Limitations
 
-- **Network dependency:** movie categories, title/person search, and movie details require a working connection to TMDB. Only favourites are persisted locally.
-- **Estimated BLE distance:** RSSI-based distance can fluctuate and should not be treated as a precise ranging measurement.
-- **Hardware dependency:** BLE scanning and GATT operations require a compatible physical device and nearby BLE peripherals.
-- **Permission dependency:** BLE functionality depends on the user granting the required Bluetooth permissions and enabling Bluetooth.
-- **TMDB credentials:** a valid TMDB Bearer token is required. Keep credentials out of public source control.
-- **Device compatibility:** BLE scan results and GATT behaviour vary across Android versions and peripheral manufacturers.
-
----
-
-## Source Layout
-
-Important implementation files:
-
-- `feature/api/presentation/ApiScreen.kt` — Movie Explorer screen.
-- `feature/api/presentation/ApiViewModel.kt` — Movie Explorer state and actions.
-- `feature/api/presentation/components/MovieCard.kt` — movie card UI.
-- `feature/api/presentation/components/MovieDetailBottomSheet.kt` — movie details UI.
-- `data/remote/ApiService.kt` — TMDB API endpoints.
-- `data/repository/MovieRepository.kt` — movie data operations.
-- `data/local/FavouriteMoviesStore.kt` — local favourite persistence.
-- `feature/ble/presentation/BleScreen.kt` — BLE scanner screen.
-- `feature/ble/presentation/DeviceDetailScreen.kt` — BLE device detail and tracking screen.
-- `core/bluetooth/BleManager.kt` — scanner/GATT coordination.
-- `core/bluetooth/BleScanner.kt` — BLE advertisements and RSSI processing.
-- `core/bluetooth/BleGattClient.kt` — GATT connection and characteristic operations.
-- `core/bluetooth/signal/` — Kalman filter, RSSI buffer, proximity and distance estimation.
-- `ui/theme/` — app colors, typography, and Material theme.
+- **Local Login:** The login screen currently validates input locally and does not provide real user authentication.
+- **Internet Dependency:** Movie categories, search, and movie details require an internet connection.
+- **API Availability:** Movie information depends on TMDB API availability and valid authentication credentials.
+- **Image Availability:** Some movies may not have poster or backdrop images available.
+- **Favourite Storage:** Favourite movies are stored locally on the device and are not synchronized across devices or accounts.
+- **Search Results:** Search results depend on the data returned by TMDB.
+- **Pagination:** Additional movies are loaded when the user scrolls through the movie list.
 
 ---
 
 ## Credits
 
-- Movie metadata and images are provided by [The Movie Database (TMDB)](https://www.themoviedb.org/).
+- Movie information and images are provided by [The Movie Database (TMDB)](https://www.themoviedb.org/).
 - This product uses the TMDB API but is not endorsed or certified by TMDB.
 
+---
+
+## Project Status
+
+**Movie Explorer – Kotlin + XML Android Application**
+
+The project is focused on a native Android movie-discovery experience with local login validation, TMDB API integration, movie browsing, search, movie details, and local favourites.
+
+BLE Device Scanner functionality has been removed from the current project scope.
