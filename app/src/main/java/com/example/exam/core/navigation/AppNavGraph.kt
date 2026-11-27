@@ -55,9 +55,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.NavType
 import com.example.exam.feature.api.presentation.ApiScreen
-import com.example.exam.feature.ble.presentation.BleScreen
-import com.example.exam.feature.ble.presentation.BleViewModel
-import com.example.exam.feature.ble.presentation.DeviceDetailScreen
+
 import com.example.exam.ui.theme.AppBackground
 import com.example.exam.ui.theme.AppBorder
 import com.example.exam.ui.theme.AppSurface
@@ -73,8 +71,7 @@ fun AppNavGraph(
     val currentDestination = navBackStackEntry?.destination
     val currentRoute = currentDestination?.route
 
-    // Shared BLE ViewModel
-    val bleViewModel: BleViewModel = hiltViewModel()
+
 
     // Movie detail visibility
     var isMovieDetailOpen by remember {
@@ -123,19 +120,6 @@ fun AppNavGraph(
             startDestination = AppRoutes.Ble.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-
-            // BLE SCREEN
-            composable(AppRoutes.Ble.route) {
-                BleScreen(
-                    onDeviceClick = { deviceId ->
-                        navController.navigate(
-                            AppRoutes.DeviceDetail.createRoute(deviceId)
-                        )
-                    },
-                    viewModel = bleViewModel
-                )
-            }
-
             // API / MOVIE EXPLORER SCREEN
             composable(AppRoutes.Api.route) {
                 ApiScreen(
@@ -157,14 +141,14 @@ fun AppNavGraph(
 
                 val deviceId =
                     backStackEntry.arguments?.getString("deviceId") ?: ""
-
-                DeviceDetailScreen(
-                    deviceId = deviceId,
-                    onBackClick = {
-                        navController.popBackStack()
-                    },
-                    viewModel = bleViewModel
-                )
+//
+//                DeviceDetailScreen(
+//                    deviceId = deviceId,
+//                    onBackClick = {
+//                        navController.popBackStack()
+//                    },
+//                    viewModel = bleViewModel
+//                )
             }
         }
     }

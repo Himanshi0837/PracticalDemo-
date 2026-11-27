@@ -40,19 +40,26 @@ class ApiViewModel @Inject constructor(
     }
 
     fun selectCategory(category: MovieCategory) {
-        if (_uiState.value.selectedCategory == category && _uiState.value.searchQuery.isEmpty()) return
+
+        if (
+            _uiState.value.selectedCategory == category &&
+            _uiState.value.searchQuery.isEmpty()
+        ) return
 
         searchDebounceJob?.cancel()
+
         _uiState.update {
             it.copy(
                 selectedCategory = category,
                 searchQuery = "",
                 currentPage = 1,
-                errorMessage = null
+                errorMessage = null,
+                isLoading = category != MovieCategory.FAVOURITES
             )
         }
 
         if (category == MovieCategory.FAVOURITES) {
+
             _uiState.update {
                 it.copy(
                     movies = repository.favouriteMovies.value,
@@ -60,6 +67,7 @@ class ApiViewModel @Inject constructor(
                     totalPages = 1
                 )
             }
+
         } else {
             loadMovies(page = 1)
         }

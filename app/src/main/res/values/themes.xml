@@ -1,9 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Exam" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">#FAF6F7</item>
+    <style name="Theme.Exam" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/on_primary_container</item>
+
+        <item name="colorSecondary">@color/secondary_rose</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/rose_gold</item>
+        <item name="colorOnSecondaryContainer">@color/wine</item>
+
+        <item name="android:colorBackground">@color/app_background</item>
+        <item name="colorSurface">@color/app_surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorSurfaceVariant">@color/app_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorOutline">@color/app_border</item>
+        <item name="colorError">@color/signal_red</item>
+        <item name="colorOnError">@color/white</item>
+
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="fontFamily">@font/montserrat</item>
+
+        <item name="android:statusBarColor">@color/app_background</item>
+        <item name="android:navigationBarColor">@color/app_background</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowBackground">#FAF6F7</item>
-        <item name="android:navigationBarColor">#FAF6F7</item>
+        <item name="android:windowBackground">@color/app_background</item>
     </style>
 </resources>

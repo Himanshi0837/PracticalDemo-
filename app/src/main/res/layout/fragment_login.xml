@@ -1,0 +1,152 @@
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F3E9"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingStart="28dp"
+        android:paddingEnd="28dp"
+        android:paddingTop="45dp"
+        android:paddingBottom="32dp">
+
+        <!-- App Branding -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CINEMORA"
+            android:textColor="#155456"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.12"
+            android:layout_marginTop="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="YOUR WORLD OF MOVIES"
+            android:textColor="#85877F"
+            android:textSize="11sp"
+            android:letterSpacing="0.18"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Welcome Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome Back!"
+            android:textColor="#202B28"
+            android:textSize="29sp"
+            android:textStyle="bold"
+            android:layout_marginTop="65dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sign in to discover movies you'll love."
+            android:textColor="#85877F"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="32dp"/>
+
+        <!-- Email Input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email address"
+            app:boxBackgroundMode="outline"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#DAD9CE"
+            app:hintTextColor="#28716D"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:singleLine="true"
+                android:textColor="#202B28"
+                android:textColorHint="#9B9E97"
+                android:padding="16dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Password Input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:layout_marginTop="20dp"
+            app:boxBackgroundMode="outline"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#DAD9CE"
+            app:hintTextColor="#28716D"
+            app:endIconMode="password_toggle"
+            app:endIconTint="#28716D"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:singleLine="true"
+                android:textColor="#202B28"
+                android:textColorHint="#9B9E97"
+                android:padding="16dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Login Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_login"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:text="SIGN IN"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:letterSpacing="0.08"
+            android:layout_marginTop="32dp"
+            app:backgroundTint="#155456"
+            app:cornerRadius="14dp"/>
+
+        <!-- Login Validation Message -->
+        <TextView
+            android:id="@+id/tv_login_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#28716D"
+            android:textSize="13sp"
+            android:gravity="center"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Footer -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome to your next movie adventure."
+            android:textColor="#85877F"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:layout_marginTop="45dp"/>
+
+    </LinearLayout>
+</ScrollView>
